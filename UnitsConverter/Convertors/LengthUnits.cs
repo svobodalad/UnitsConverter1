@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnitsConverter.Interfaces;
 using UnitsConverter.Utils;
 
@@ -14,8 +12,7 @@ namespace UnitsConverter.Convertors
     class LengthUnits : ConverterInterface
     {
         private string[] supportedUnits = new string[6] { "inches", "inch", "feets", "feet", "meters", "meter" };
-        private ParseInput parseInput;
-        private ParseOutput parseOutput;
+        private ParseAllParams parseAllParams;
         private Dictionary<string, decimal> convertConstants;
 
         /// <summary>
@@ -25,11 +22,11 @@ namespace UnitsConverter.Convertors
         /// <summary>
         /// The property tells if an input unit is supported for conversion
         /// </summary>
-        public bool IsKnownInputUnit => !string.IsNullOrEmpty(parseInput.Unit);
+        public bool IsKnownInputUnit => !string.IsNullOrEmpty(parseAllParams.InputUnit);
         /// <summary>
         /// The property tells if an output unit is known and supported
         /// </summary>
-        public bool IsKnownOutputUnit => !string.IsNullOrEmpty(parseOutput.Unit);
+        public bool IsKnownOutputUnit => !string.IsNullOrEmpty(parseAllParams.OutputUnit);
         /// <summary>
         /// Error in input analysis, convert, syntaxes...
         /// </summary>
@@ -44,9 +41,9 @@ namespace UnitsConverter.Convertors
             if(string.IsNullOrEmpty(Error)) {
                 var cultureInfo = new System.Globalization.CultureInfo("en-US");
                 try {
-                    var val1 = (decimal.Parse(parseInput.Value,cultureInfo) * (string.IsNullOrEmpty(parseInput.Prefix) ? 1 : SiPrefixes.SiTables[parseInput.Prefix])) * convertConstants[parseInput.Unit];
-                    var val2 = val1 / (((string.IsNullOrEmpty(parseOutput.Prefix) ? 1 : SiPrefixes.SiTables[parseOutput.Prefix])) * convertConstants[parseOutput.Unit]);
-                    return $"{Math.Round(val2, 2).ToString(cultureInfo)} {parseOutput.Prefix}{parseOutput.Unit}";
+                    var val1 = (decimal.Parse(parseAllParams.InputValue, cultureInfo) * (string.IsNullOrEmpty(parseAllParams.InputPrefix) ? 1 : SiPrefixes.SiTables[parseAllParams.InputPrefix])) * convertConstants[parseAllParams.InputUnit];
+                    var val2 = val1 / (((string.IsNullOrEmpty(parseAllParams.OutputPrefix) ? 1 : SiPrefixes.SiTables[parseAllParams.OutputPrefix])) * convertConstants[parseAllParams.OutputUnit]);
+                    return $"{Math.Round(val2, 2).ToString(cultureInfo)} {parseAllParams.OutputPrefix}{parseAllParams.OutputUnit}";
                 }
                 catch(Exception exc) {
                     Error = exc.Message;
@@ -61,20 +58,19 @@ namespace UnitsConverter.Convertors
         /// <param name="input"></param>
         /// <param name="output"></param>
         public void ParseParameters(string input, string output) {
-            parseInput.Error = null;
+            parseAllParams.Error = null;
+            Error = null;
             InitConvertConstants();
             var prefixes = SiPrefixes.SiTables.Keys.ToArray();
             var units = new Dictionary<string, string[]>();
             foreach(var item in supportedUnits) {
                 units.Add(item, prefixes);
             }
-            parseInput = Utils.Utils.ParseInputParams(input, units);
-            Error = parseInput.Error;
-            if(string.IsNullOrEmpty(parseInput.Error)) {
-                parseOutput = Utils.Utils.ParseOutputParams(output, units);
-                Error = parseOutput.Error;
-            }
+            //For this converter are outputprefixes the same as inputprefixes 
+            parseAllParams = Parsing.ParseParams(input, units, true, false, output, units, true, false);
+            Error = parseAllParams.Error;
         }
+
         /// <summary>
         /// Init constants for convert units.
         /// Base unit is metter

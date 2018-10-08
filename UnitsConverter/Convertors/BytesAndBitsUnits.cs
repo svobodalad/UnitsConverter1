@@ -12,8 +12,7 @@ namespace UnitsConverter.Convertors
     class BytesAndBitsUnits : ConverterInterface
     {
         private string[] supportedUnits = new string[4] { "bytes", "byte", "bits", "bit"};
-        private ParseInput parseInput;
-        private ParseOutput parseOutput;
+        private ParseAllParams parseAllParams;
         private Dictionary<string, decimal> convertConstants;
 
         /// <summary>
@@ -23,11 +22,11 @@ namespace UnitsConverter.Convertors
         /// <summary>
         /// The property tells if an input unit is supported for conversion
         /// </summary>
-        public bool IsKnownInputUnit => !string.IsNullOrEmpty(parseInput.Unit);
+        public bool IsKnownInputUnit => !string.IsNullOrEmpty(parseAllParams.InputUnit);
         /// <summary>
         /// The property tells if an output unit is known and supported
         /// </summary>
-        public bool IsKnownOutputUnit => !string.IsNullOrEmpty(parseOutput.Unit);
+        public bool IsKnownOutputUnit => !string.IsNullOrEmpty(parseAllParams.OutputUnit);
         /// <summary>
         /// Error in input analysis, convert, syntaxes...
         /// </summary>
@@ -42,10 +41,10 @@ namespace UnitsConverter.Convertors
             if(string.IsNullOrEmpty(Error)) {
                 try {
                     var cultureInfo = new System.Globalization.CultureInfo("en-US");
-                    var val1 = (decimal.Parse(parseInput.Value, cultureInfo) * (string.IsNullOrEmpty(parseInput.Prefix) ? 1 : BitBytePrefixes.Prefixes[parseInput.Prefix])) * convertConstants[parseInput.Unit];
+                    var val1 = (decimal.Parse(parseAllParams.InputValue, cultureInfo) * (string.IsNullOrEmpty(parseAllParams.InputPrefix) ? 1 : BitBytePrefixes.Prefixes[parseAllParams.InputPrefix])) * convertConstants[parseAllParams.InputUnit];
                     if(val1 < 0) throw new Exception("Negative value is not allowed");
-                    var val2 = val1 / ((string.IsNullOrEmpty(parseOutput.Prefix) ? 1 : BitBytePrefixes.Prefixes[parseOutput.Prefix]) * convertConstants[parseOutput.Unit]);
-                    return $"{val2.ToString(cultureInfo)} {parseOutput.Prefix}{parseOutput.Unit}";
+                    var val2 = val1 / ((string.IsNullOrEmpty(parseAllParams.OutputPrefix) ? 1 : BitBytePrefixes.Prefixes[parseAllParams.OutputPrefix]) * convertConstants[parseAllParams.OutputUnit]);
+                    return $"{val2.ToString(cultureInfo)} {parseAllParams.OutputPrefix}{parseAllParams.OutputUnit}";
                 }
                 catch(Exception exc) {
                     Error = exc.Message;
@@ -60,19 +59,17 @@ namespace UnitsConverter.Convertors
         /// <param name="input"></param>
         /// <param name="output"></param>
         public void ParseParameters(string input, string output) {
-            parseInput.Error = null;
+            parseAllParams.Error = null;
+            Error = null;
             InitConvertConstants();
             var prefixes = BitBytePrefixes.Prefixes.Keys.ToArray();
             var units = new Dictionary<string, string[]>();
             foreach(var item in supportedUnits) {
                 units.Add(item, prefixes);
             }
-            parseInput = Utils.Utils.ParseInputParams(input, units);
-            Error = parseInput.Error;
-            if(string.IsNullOrEmpty(parseInput.Error)) {
-                parseOutput = Utils.Utils.ParseOutputParams(output, units);
-                Error = parseOutput.Error;
-            }
+            //For this converter are outputprefixes the same as inputprefixes 
+            parseAllParams = Parsing.ParseParams(input, units, true, false, output, units, true, false);
+            Error = parseAllParams.Error;
         }
 
         /// <summary>

@@ -3,16 +3,25 @@ using System.Collections.Generic;
 
 namespace UnitsConverter.Utils
 {
+    /// <summary>
+    /// The class provide known prefixes for length units
+    /// Source of information: https://en.wikipedia.org/wiki/Metric_prefix
+    /// </summary>
     public sealed class SiPrefixes {
 
         private static readonly Lazy<SiPrefixes> prefixes = new Lazy<SiPrefixes>(() => new SiPrefixes());
+        /// <summary>
+        /// Static property with prefixes as lazy singleton
+        /// </summary>
         public static Dictionary<string, decimal> SiTables { get { return prefixes.Value.SiDictionary; } }
         public Dictionary<string, decimal> SiDictionary { get; private set; }
 
         private SiPrefixes() {
             InitTables();
         }
-
+        /// <summary>
+        /// Store prefixes into dictionary
+        /// </summary>
         private void InitTables() {
             var siDictionaryLocal = new Dictionary<string, decimal>();
             siDictionaryLocal.Add("yotta", 1000000000000000000000000m);

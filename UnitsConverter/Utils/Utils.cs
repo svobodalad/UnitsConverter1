@@ -6,6 +6,14 @@ namespace UnitsConverter.Utils
 {
     class Utils
     {
+        /// <summary>
+        /// Static method for parsing input parameters with "value, prefix(optional), unit" for instance:4797.9 meter;36 exameter;10 bytes.....
+        /// </summary>
+        /// <param name="inputParams"></param>
+        /// <param name="allowedUnitsAndPrefixes"></param>
+        /// <param name="caseSensitivePrefix"></param>
+        /// <param name="caseSensitiveUnits"></param>
+        /// <returns></returns>
         public static ParseInput ParseInputParams(string inputParams, Dictionary<string,string[]> allowedUnitsAndPrefixes, bool caseSensitivePrefix = true, bool caseSensitiveUnits = false) {
             if(string.IsNullOrWhiteSpace(inputParams)) return new ParseInput() { Value = string.Empty, Prefix = string.Empty, Unit = string.Empty, Error = "InputParams are empty" };
             var trimmedInputParams = inputParams.Trim(); 
@@ -33,6 +41,14 @@ namespace UnitsConverter.Utils
             return new ParseInput() { Value=string.Empty, Prefix=string.Empty, Unit=string.Empty, Error=string.Empty };
         }
 
+        /// <summary>
+        /// Static method for parsing required output unit for instance: meter, kilometer, milimeter, bit, kilobits....
+        /// </summary>
+        /// <param name="prefixAndUnit"></param>
+        /// <param name="allowedUnitsAndPrefixes"></param>
+        /// <param name="caseSensitivePrefix"></param>
+        /// <param name="caseSensitiveUnits"></param>
+        /// <returns></returns>
         public static ParseOutput ParseOutputParams(string prefixAndUnit, Dictionary<string, string[]> allowedUnitsAndPrefixes, bool caseSensitivePrefix = true, bool caseSensitiveUnits = false) {
             if(string.IsNullOrWhiteSpace(prefixAndUnit)) return new ParseOutput() {Prefix = string.Empty, Unit = string.Empty, Error = "PrefixAndUnit for output are empty" };
             var prefixAndUnitLength = prefixAndUnit.Length;

@@ -3,10 +3,16 @@ using System.Collections.Generic;
 
 namespace UnitsConverter.Utils
 {
+    /// <summary>
+    /// The class provide known prefixes for data units
+    /// Source of information: https://en.wikipedia.org/wiki/Binary_prefix
+    /// </summary>
     public sealed class BitBytePrefixes
     {
-
         private static readonly Lazy<BitBytePrefixes> prefixes = new Lazy<BitBytePrefixes>(() => new BitBytePrefixes());
+        /// <summary>
+        /// Static property with prefixes as lazy singleton
+        /// </summary>
         public static Dictionary<string, decimal> Prefixes { get { return prefixes.Value.BitByteDictionary; } }
         public Dictionary<string, decimal> BitByteDictionary { get; private set; }
 
@@ -14,6 +20,9 @@ namespace UnitsConverter.Utils
             InitTables();
         }
 
+        /// <summary>
+        /// Store prefixes into dictionary
+        /// </summary>
         private void InitTables() {
             var bitByteDictionaryLocal = new Dictionary<string, decimal>();
             bitByteDictionaryLocal.Add("yotta", 1000000000000000000000000m);

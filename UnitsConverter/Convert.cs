@@ -14,12 +14,22 @@ namespace UnitsConverter
             convertors = new Lazy<ConverterInterface[]>(() => LoadConvertors());
         }
 
+        /// <summary>
+        /// Dynamically load instance of converters with using reflection each instanced type has to implement interface "ConverterInterface" 
+        /// </summary>
+        /// <returns></returns>
         private ConverterInterface[] LoadConvertors() {
             var types = Assembly.GetExecutingAssembly().GetTypes();
             var typesWithInterface = types.Where(tp => tp.IsClass && typeof(ConverterInterface).IsAssignableFrom(tp)).Select(tp => (ConverterInterface)Activator.CreateInstance(tp)).ToArray();
             return typesWithInterface;
         }
 
+        /// <summary>
+        /// The main conversion method which is visible from outside, provide complex functionality and internally call conversion functionality in each of convertors
+        /// </summary>
+        /// <param name="inputParams"></param>
+        /// <param name="outputPrefixAndUnit"></param>
+        /// <returns></returns>
         public ConvertResult ExecuteConvert(string inputParams, string outputPrefixAndUnit) {
             foreach(var item in convertors.Value) {
                 item.ParseParameters(inputParams, outputPrefixAndUnit);

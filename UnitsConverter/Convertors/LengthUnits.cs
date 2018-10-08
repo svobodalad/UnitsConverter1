@@ -8,6 +8,9 @@ using UnitsConverter.Utils;
 
 namespace UnitsConverter.Convertors
 {
+    /// <summary>
+    /// Class for  convert Units of length, supported units: "inches", "inch", "feets", "feet", "meters", "meter"
+    /// </summary>
     class LengthUnits : ConverterInterface
     {
         private string[] supportedUnits = new string[6] { "inches", "inch", "feets", "feet", "meters", "meter" };
@@ -15,11 +18,28 @@ namespace UnitsConverter.Convertors
         private ParseOutput parseOutput;
         private Dictionary<string, decimal> convertConstants;
 
+        /// <summary>
+        /// The property tells if the class supports conversion of input/output units
+        /// </summary>
         public bool CanConvert => IsKnownInputUnit && IsKnownOutputUnit && string.IsNullOrEmpty(Error);
+        /// <summary>
+        /// The property tells if an input unit is supported for conversion
+        /// </summary>
         public bool IsKnownInputUnit => !string.IsNullOrEmpty(parseInput.Unit);
+        /// <summary>
+        /// The property tells if an output unit is known and supported
+        /// </summary>
         public bool IsKnownOutputUnit => !string.IsNullOrEmpty(parseOutput.Unit);
+        /// <summary>
+        /// Error in input analysis, convert, syntaxes...
+        /// </summary>
         public string Error { get; private set; }
 
+        /// <summary>
+        /// Main method provides conversion function of parsed parameters
+        /// The rounding of output values is two decimal places
+        /// </summary>
+        /// <returns></returns>
         public string Convert() {
             if(string.IsNullOrEmpty(Error)) {
                 var cultureInfo = new System.Globalization.CultureInfo("en-US");
@@ -35,6 +55,11 @@ namespace UnitsConverter.Convertors
             return string.Empty;
         }
 
+        /// <summary>
+        /// The method extracts parameters from input and required output
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
         public void ParseParameters(string input, string output) {
             parseInput.Error = null;
             InitConvertConstants();
@@ -50,7 +75,10 @@ namespace UnitsConverter.Convertors
                 Error = parseOutput.Error;
             }
         }
-
+        /// <summary>
+        /// Init constants for convert units.
+        /// Base unit is metter
+        /// </summary>
         private void InitConvertConstants() {
             if(convertConstants == null) {
                 convertConstants = new Dictionary<string, decimal>();

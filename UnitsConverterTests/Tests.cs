@@ -3,6 +3,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitsConverterTests
 {
+    /// <summary>
+    /// Tests for simulate real parameters for conversions
+    /// </summary>
     [TestClass]
     public class Tests
     {
